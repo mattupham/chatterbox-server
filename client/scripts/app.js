@@ -3,7 +3,7 @@ var app = {
 
   //TODO: The current 'handleUsernameClick' function just toggles the class 'friend'
   //to all messages sent by the user
-  server: 'http://parse.sfm6.hackreactor.com/chatterbox/classes/messages',
+  server: 'http://parse.sfm6.hackreactor.com/chatterbox/classes/messages', //% http://127.0.0.1:3000
   username: 'anonymous',
   roomname: 'lobby',
   lastMessageId: 0,
