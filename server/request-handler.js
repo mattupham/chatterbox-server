@@ -17,7 +17,6 @@ var defaultCorsHeaders = {
   'access-control-allow-headers': 'content-type, accept',
   'access-control-max-age': 10 // Seconds.
 };
-
 var messages = [{username: 'Jono', message: 'Do my bidding!'}];
 // % added exports
 var exports = module.exports = {};
@@ -30,11 +29,12 @@ exports.requestHandler = function(request, response) {
   var headers = defaultCorsHeaders;
   headers['Content-Type'] = 'text/JSON';
 
-
-
   if (request.method === 'GET') {
     //OK
     statusCode = 200;
+    if (request.url !== '/classes/messages') {
+      statusCode = 404;
+    }
     response.writeHead(statusCode, headers);
     //turns message into similar data structure with resulst as a key, and object as val
     const responseBody = {};
@@ -43,68 +43,20 @@ exports.requestHandler = function(request, response) {
   }
 
   if (request.method === 'POST') {
-    request.on('error', (err) => {
-      console.error(err);
-      //bad request
-      response.statusCode = 400;
-      response.end();
-    });
-    response.on('error', (err) => {
-      console.error(err);
-    });
-    if (request.method === 'POST' && request.url === '/classes/messages') {
-      let body = '';
 
-      request.on('data', (chunk) => {
-        //build up stringified messages object
-        body += chunk;
-
-      });
-      response.statusCode = 201;
-      response.end();
-
-    } else {
-      //not found
-      response.statusCode = 404;
+    if (request.url !== '/classes/messages') {
+      response.writeHead(404);
       response.end();
     }
+    let body = '';
 
-    //if endpoint is correct, run our post request
-    // if (endpoints[request.url] === 'messages') {
-    //   statusCode = 201;
-    //   //check to see if our endpoints match
-    //   const {method, url} = request;
-    //   //stringified message object
-    //   let body = '';
-
-    //   request.on('error', (err) => {
-    //     console.log('we hit an error');
-    //     console.error(err);
-
-    //   }).on('data', (chunk) => {
-    //     //build up stringified messages object
-    //     body += chunk;
-
-    //   });
-    // } else {
-    //   //if endpoint is incorrect, update status code to 404
-    //   statusCode = 404;
-    // }
-
-
-    // request.on('end', () => {
-
-    //   response.on('error', (err) => {
-    //     console.error(err);
-    //   });
-    //   //grab incoming message, parse it to object, add to messages array
-    //   messages.push(JSON.parse(body));
-    //   response.writeHead(statusCode, headers);
-    //   const responseBody = {headers, method, url, body};
-    //   response.end(JSON.stringify(responseBody));
-    // });
+    request.on('data', (chunk) => {
+      //build up stringified messages object
+      body += chunk;
+    });
+    response.writeHead(201);
+    response.end();
   }
-
 };
 
 // These headers will allow Cross-Origin Resource Sharing (CORS).
